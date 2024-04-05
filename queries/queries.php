@@ -1,32 +1,30 @@
 <?php
+require_once "common/connect_db.php";
 
-$servername = "localhost";
-$username = "root";
-$database = "test";
-
-$conn = new mysqli($servername, $username, "", $database);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-//echo "Connected successfully"."<br>";
-
-function getFromDB ()
+function getFromDB (): array
 {
     global $conn;
     $sql = /** @lang text */
         "SELECT id, name, age FROM clients";
     $result = mysqli_query($conn, $sql);
 
+//    if (mysqli_num_rows($result) > 0) {
+//        while($row = mysqli_fetch_assoc($result)) {
+//            echo "<tr><td>".$row["id"]."</td><td>".$row["name"]."</td><td>".$row["age"]."</td></tr>";
+//        }
+//    } else {
+//        echo "0 results";
+//    }
+    $rows = [];
     if (mysqli_num_rows($result) > 0) {
-        // output data of each row
         while($row = mysqli_fetch_assoc($result)) {
-//            echo "id: " . $row["id"]. " - Name: " . $row["name"]. " " . $row["age"]. "<br>";
-            echo "<tr><td>".$row["id"]."</td><td>".$row["name"]."</td><td>".$row["age"]."</td></tr>";
+//            $rows[$row["id"]] = ["name"=>$row["name"], "age"=>$row["age"]];
+            $rows[$row["id"]] = $row;
         }
-    } else {
-        echo "0 results";
     }
+    $conn->close();
+
+    return $rows;
 };
 
 function insertLine (array $array_params,array $array_values)
@@ -42,6 +40,7 @@ function insertLine (array $array_params,array $array_values)
     } else {
         echo "Error: " . $sql . "<br>" . $conn->error;
     }
+    $conn->close();
 };
 function transformArray(array $array)
 {
@@ -54,5 +53,5 @@ function transformArray(array $array)
     return $string;
 }
 
-//$conn->close();
+
 
